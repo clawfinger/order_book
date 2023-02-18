@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
 set(CMAKE_CXX_STANDARD 14)
 
+project(tests LANGUAGES CXX)
+
 include(FetchContent)
 FetchContent_Declare(
   googletest
@@ -9,28 +11,5 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-project(order_book_test LANGUAGES CXX)
-
-set(TEST_HEADERS
-    "test.h"
-)
-set(TEST_SOURCES
-    "test.cpp"
-)
-
-add_executable(order_book_test
-    ${TEST_HEADERS}
-    ${TEST_SOURCES}
-    )
-
-
-include(GoogleTest)
-gtest_discover_tests(order_book_test)
-
-
-target_link_libraries(
-  order_book_test
-  PUBLIC
-  order_book_lib
-  GTest::gtest_main
-)
+add_executable(tests main.cpp)
+target_link_libraries(tests order_book_lib gtest_main) 

@@ -1,15 +1,12 @@
-#pragma once 
-enum Side { BID, ASK };
+#pragma once
+
+enum Side { BID = 0, ASK = 1};
 
 struct Element {
 	double price;
 	double quantity;
 	Side side;
 };
-
-bool operator<(const Element& left, const Element& right) {
-	return left.price < right.price;
-}
 
 class IOrderBook {
 public:
