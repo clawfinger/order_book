@@ -15,6 +15,7 @@ OrderBook::OrderBook(size_t capacity)
 void OrderBook::add(Element elem)
 {
 	auto& row = m_rows[elem.side];
+
 	auto insertPoint = row.end();
 	while (insertPoint != row.begin()) {
 		insertPoint--;
@@ -60,24 +61,27 @@ void OrderBook::del(double price)
 
 double OrderBook::vwap(size_t depth)
 {
-	double totoalDepthPrice = 0.0;
+	double totalDepthPrice = 0.0;
 	double fullAmount = 0.0;
-	auto bidIt = m_rows[Side::BID].rbegin();
-	auto askIt = m_rows[Side::ASK].rbegin();
-	while (depth != 0) {
-		if (bidIt != m_rows[Side::BID].rend()) {
-			totoalDepthPrice += (bidIt->price * bidIt->quantity);
-			fullAmount += bidIt->quantity;
-			bidIt++;
-		}
 
-		if (askIt != m_rows[Side::ASK].rend()) {
-			totoalDepthPrice += (askIt->price * askIt->quantity);
-			fullAmount += askIt->quantity;
-			askIt++;
-		}
+	const auto& bids = m_rows[Side::BID];
+	const auto& asks = m_rows[Side::ASK];
+	size_t bidsSize = bids.size();
+	size_t asksSize = asks.size();
+	size_t bidCount = std::min(bidsSize, depth);
+	size_t askCount = std::min(asksSize, depth);
 
-		depth--;
+	for (size_t i = 1; i <= bidCount; i++) {
+		size_t idx = bidsSize - i;
+		totalDepthPrice += (bids[idx].price * bids[idx].quantity);
+		fullAmount += bids[idx].quantity;
 	}
-	return totoalDepthPrice / fullAmount;
+
+	for (size_t i = 1; i <= askCount; i++) {
+		size_t idx = asksSize - i;
+		totalDepthPrice += (asks[idx].price * asks[idx].quantity);
+		fullAmount += asks[idx].quantity;
+	}
+
+	return totalDepthPrice / fullAmount;
 }
